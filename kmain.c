@@ -9,7 +9,7 @@ void kmain() {
 
     serial_configure_baud_rate(SERIAL_COM1_BASE, 0x03);
     serial_configure_line(SERIAL_COM1_BASE);
-    serial_write("Hi");
+    serial_write("Hi\n");
 
     while(1) {
         // kernel main loop
