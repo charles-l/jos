@@ -1,8 +1,9 @@
 #ifndef IO_H
 #define IO_H
+#include "type.h"
 
-extern void outb(unsigned short port, unsigned char data);
-unsigned char inb(unsigned short port);
+extern void outb(u16 port, u8 data);
+u8 inb(u16 port);
 
 //// FRAMEBUFFER ////
 #define FB_GREEN     2
@@ -10,17 +11,17 @@ unsigned char inb(unsigned short port);
 #define FB_MAXPOS    2000
 
 void puts(char *s);
-void puti(int i, int base);
+void puti(i32 i, i32 base);
 void printf(char *fmt, ...);
 
 // helper
 void fb_clear();
 
 // low-level
-void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg);
-void fb_cmv(unsigned short pos);
+void fb_write_cell(u32 i, char c, u8 fg, u8 bg);
+void fb_cmv(u16 pos);
 void fb_pchar(char c);
-int fb_cpos();
+i32 fb_cpos();
 
 //// SERIAL ////
 #define SERIAL_COM1_BASE                0x3F8      /* COM1 base port */
@@ -29,8 +30,8 @@ int fb_cpos();
 void serial_write(char *s);
 
 // low-level
-void serial_configure_baud_rate(unsigned short com, unsigned short divisor);
-void serial_configure_line(unsigned short com);
+void serial_configure_baud_rate(u16 com, u16 divisor);
+void serial_configure_line(u16 com);
 
 
 #endif // IO_H

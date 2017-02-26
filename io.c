@@ -1,62 +1,5 @@
 #include "io.h"
 
-void puts(char *s) {
-    for(unsigned int i = 0; s[i] != '\0'; i++) {
-        fb_pchar(s[i]);
-    }
-}
-
-void putui(unsigned int i, int base) {
-    if(i > 0) {
-        putui(i / base, base);
-        int j = i % base;
-        fb_pchar(j + (j < 10 ? '0' : 'A' - 10));
-    }
-}
-
-void puti(int i, int base) {
-    if(i == 0) {
-        fb_pchar('0');
-    } else if (i < 0) {
-        fb_pchar('-');
-        putui(-i, base);
-    } else {
-        putui(i, base);
-    }
-}
-
-void printf(char *fmt, ...) {
-    __builtin_va_list argp;
-    __builtin_va_start(argp, fmt);
-    for(char *p = fmt; *p != '\0'; p++) {
-        if(*p == '%') {
-            switch(*++p) {
-                case 'c':
-                    fb_pchar(__builtin_va_arg(argp, int));
-                    break;
-                case 's':
-                    puts(__builtin_va_arg(argp, char *));
-                    break;
-                case 'i':
-                    puti(__builtin_va_arg(argp, int), 10);
-                    break;
-                case 'x':
-                    puti(__builtin_va_arg(argp, int), 16);
-                    break;
-                case 'b':
-                    puti(__builtin_va_arg(argp, int), 2);
-                    break;
-                case '%':
-                    fb_pchar('%');
-                    break;
-            }
-        } else {
-            fb_pchar(*p);
-        }
-    }
-    __builtin_va_end(argp);
-}
-
 #define FB_COMMAND_PORT         0x3D4
 #define FB_DATA_PORT            0x3D5
 
@@ -67,7 +10,7 @@ void printf(char *fmt, ...) {
 static int pos = 0;
 char *fb = (char *) 0x000B8000;
 
-void fb_cmv(unsigned short p) {
+void fb_cmv(u16 p) {
     outb(FB_COMMAND_PORT, FB_HIGH_BYTE_COMMAND);
     outb(FB_DATA_PORT,    ((p >> 8) & 0x00FF));
     outb(FB_COMMAND_PORT, FB_LOW_BYTE_COMMAND);
@@ -88,7 +31,7 @@ void fb_clear() {
 }
 
 
-void fb_write_cell(unsigned int i, char c, unsigned char fg, unsigned char bg) {
+void fb_write_cell(u32 i, char c, u8 fg, u8 bg) {
     fb[i] = c;
     fb[i + 1] = ((fg & 0x0F) << 4) | (bg & 0x0F);
 }
@@ -132,7 +75,7 @@ void serial_configure_line(unsigned short com) {
     outb(SERIAL_LINE_COMMAND_PORT(com), 0x03);
 }
 
-int serial_is_transmit_fifo_empty(unsigned int com) {
+int serial_is_transmit_fifo_empty(u32 com) {
     /* 0x20 = 0010 0000 */
     return inb(SERIAL_LINE_STATUS_PORT(com)) & 0x20;
 }
